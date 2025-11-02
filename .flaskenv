@@ -1,0 +1,2 @@
+FLASK_APP=glassbridge:create_app
+FLASK_ENV=development

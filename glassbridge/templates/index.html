@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glass Bridge</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="header">
+      <h1>Glass Bridge</h1>
+      <p>Are you willing to sacrifice yourself for others?</p>
+      <br>
+      <h2><span id="countdown"></span></h2>
+    </div>
+
+    <div class="bridge" id="bridge">
+      {% for step in steps %}
+      <div class="step-row" style="animation-delay: {{ step.id * 0.05 }}s">
+        <div class="step-number">#{{ step.id }}</div>
+        <div class="glass-panel left">
+          <div class="tooltip">
+            {% if step.first_blood %}
+              <p>step.first_blood.name</p>
+            {% else %}
+              <p>Come on.</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="glass-panel right">
+          <div class="tooltip">
+            {% if step.first_blood %}
+              <p>step.first_blood.name</p>
+            {% else %}
+              <p>Come on.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="footer">
+      <h2>End of Bridge</h2>
+    </div>
+  </body>
+  <script>
+    const endTime = new Date("{{ end_time }}").getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const diff = endTime - now;
+
+      if (diff <= 0) {
+        document.getElementById("countdown").textContent = "00:00:00";
+        clearInterval(interval);
+        return;
+      }
+
+      const hours = Math.floor(diff / 1000 / 60 / 60);
+      const minutes = Math.floor(diff / 1000 / 60 % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("countdown").textContent =
+        `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+    }
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+  </script>
+</html>
