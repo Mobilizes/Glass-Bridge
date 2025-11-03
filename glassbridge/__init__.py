@@ -1,13 +1,12 @@
 import os
 
-from datetime import datetime, timezone
-
-from flask import Flask, render_template
+from flask import Flask
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 
-from .models import db, Step
+from .models import db
 from .seeder import seed_data
+from . import routes
 
 
 def create_app(test_config=None):
@@ -35,14 +34,6 @@ def create_app(test_config=None):
         with app.app_context():
             seed_data()
 
-    @app.route("/")
-    def index():
-        steps = Step.query.order_by(Step.id.asc()).all()
-        end_time = (
-            datetime.fromisoformat(app.config["END_TIME"])
-            .astimezone(timezone.utc)
-            .strftime("%Y-%m-%dT%H:%M:%SZ")
-        )
-        return render_template("index.html", steps=steps, end_time=end_time)
+    app.register_blueprint(routes.bp)
 
     return app

@@ -18,7 +18,7 @@ def seed_data():
             )
         )
 
-    ext_participants = pd.read_csv("data/participants.csv", delimiter=';')
+    ext_participants = pd.read_csv("data/participants.csv", delimiter=";")
     for i, row in ext_participants.iterrows():
         seeds.append(
             Participant(
