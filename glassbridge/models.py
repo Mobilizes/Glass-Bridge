@@ -18,6 +18,12 @@ class Participant(db.Model):
     nrp = db.Column(db.String(10), primary_key=True)
     name = db.Column(db.String(128), nullable=False)
 
+    # What step did the participant fall to?
+    # Example: At step 5, participant receives WA, first_try would be 5.
+    # If value is MAX+1, participant successfully crossed the entire bridge
+    first_try = db.Column(db.Integer, nullable=True)
+    second_try = db.Column(db.Integer, nullable=True)
+
 
 class Step(db.Model):
     __tablename__ = "steps"
@@ -27,31 +33,41 @@ class Step(db.Model):
     correct = db.Column(Enum(Correct), nullable=False)
 
     # The one that takes the fall
-    first_blood_id = db.Column(db.Integer, ForeignKey("participants.nrp"), nullable=True)
-    first_blood = relationship("Participant", foreign_keys=[first_blood_id])
-    first_blood_ts = db.Column(db.DateTime, nullable=True)
+    first_blood_nrp = db.Column(
+        db.Integer, ForeignKey("participants.nrp"), nullable=True
+    )
+    first_blood = relationship("Participant", foreign_keys=[first_blood_nrp])
+    first_blood_timestamp = db.Column(db.DateTime, nullable=True)
 
     # The first participant that doesn't die on step
-    first_alive_id = db.Column(db.Integer, ForeignKey("participants.nrp"), nullable=True)
-    first_alive = relationship("Participant", foreign_keys=[first_alive_id])
-    first_alive_ts = db.Column(db.DateTime, nullable=True)
+    first_alive_nrp = db.Column(
+        db.Integer, ForeignKey("participants.nrp"), nullable=True
+    )
+    first_alive = relationship("Participant", foreign_keys=[first_alive_nrp])
+    first_alive_timestamp = db.Column(db.DateTime, nullable=True)
 
-    # Jumps to the already known pitfall
+    # How many people fell after solution is revealed
     patrick = db.Column(db.Integer, default=0)
     # q: Why named patrick?
     # a: eya eya ya, yeye, yeye
 
-    # Jumps after someone had already died
-    recipients = db.Column(db.Integer, default=0)
+    # How many people got through this step
+    survivors = db.Column(db.Integer, default=0)
 
 
-@event.listens_for(Step.first_blood_id, "set")
+class Submission(db.Model):
+    __tablename__ = "submissions"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+
+@event.listens_for(Step.first_blood_nrp, "set")
 def update_first_blood_ts(target, value, oldvalue, initiator):
     if value is not None:
         target.first_blood_ts = datetime.utcnow()
 
 
-@event.listens_for(Step.first_alive_id, "set")
+@event.listens_for(Step.first_alive_nrp, "set")
 def update_first_alive_ts(target, value, oldvalue, initiator):
     if value is not None:
         target.first_alive_ts = datetime.utcnow()

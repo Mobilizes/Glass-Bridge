@@ -22,22 +22,10 @@
       <div class="step-row" style="animation-delay: {{ step.id * 0.05 }}s">
         <div class="step-number">#{{ step.id }}</div>
         <div class="glass-panel left">
-          <div class="tooltip">
-            {% if step.first_blood %}
-              <p>step.first_blood.name</p>
-            {% else %}
-              <p>Come on.</p>
-            {% endif %}
-          </div>
+          <div class="tooltip"></div>
         </div>
         <div class="glass-panel right">
-          <div class="tooltip">
-            {% if step.first_blood %}
-              <p>step.first_blood.name</p>
-            {% else %}
-              <p>Come on.</p>
-            {% endif %}
-          </div>
+          <div class="tooltip"></div>
         </div>
       </div>
       {% endfor %}
@@ -66,6 +54,16 @@
 
       document.getElementById("countdown").textContent =
         `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+      left = document.getElementsByClassName("glass-panel left");
+      right = document.getElementsByClassName("glass-panel right");
+
+      for (let el of left) {
+        el.getElementsByClassName("tooltip")[0].textContent = "Safe";
+      }
+      for (let el of right) {
+        el.getElementsByClassName("tooltip")[0].textContent = "Break";
+      }
     }
 
     updateCountdown();
