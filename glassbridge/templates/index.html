@@ -21,21 +21,37 @@
       {% for step in steps %}
       <div class="step-row" style="animation-delay: {{ step.id * 0.05 }}s">
         <div class="step-number">#{{ step.id }}</div>
-        <div class="glass-panel left" style="
+        <div class="glass-panel left {% if step.survivors == 1 %}fresh{% endif %}" style="
           {% if step.stepped and step.correct == 'r' %}
             opacity: 20% !important;
             pointer-events: none !important;
           {% endif %}"
         >
-          <div class="tooltip left">There are {{step.survivors}} people that has crossed this step</div>
+          <div class="tooltip left">
+            {% if step.survivors == 0 %}
+              Which one is the correct one?
+            {% elif step.survivors == 1 %}
+              Here!
+            {% else %}
+              {{step.survivors}} survivors has crossed beyond this step...
+            {% endif %}
+          </div>
         </div>
-        <div class="glass-panel right" style="
+        <div class="glass-panel right {% if step.survivors == 1 %}fresh{% endif %}" style="
           {% if step.stepped and step.correct == 'l' %}
             opacity: 20% !important;
             pointer-events: none !important;
           {% endif %}"
         >
-          <div class="tooltip right">There are {{step.survivors}} people that has crossed this step</div>
+          <div class="tooltip right">
+            {% if step.survivors == 0 %}
+              Which one is the correct one?
+            {% elif step.survivors == 1 %}
+              Here!
+            {% else %}
+              {{step.survivors}} survivors has crossed beyond this step...
+            {% endif %}
+          </div>
         </div>
       </div>
       {% endfor %}

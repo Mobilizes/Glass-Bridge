@@ -68,12 +68,12 @@ with app.app_context():
             db.session.rollback()
             continue
 
-        print(f"Nama: {nama}, id: {id}")
-
         participant = Participant.query.filter_by(nrp=nrp).first()
         if participant is None:
             db.session.rollback()
             continue
+
+        print(f"Nama: {nama}, id: {id}")
 
         if participant.first_try is None:
             participant.first_try_id = id
