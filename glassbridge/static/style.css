@@ -209,8 +209,16 @@ body::-webkit-scrollbar-thumb {
   left: 120%;
 }
 
+.tooltip.left.fresh {
+  left: 50%;
+}
+
 .tooltip.right {
   left: -20%;
+}
+
+.tooltip.right.fresh {
+  left: 50%;
 }
 
 .glass-panel:hover .tooltip {
