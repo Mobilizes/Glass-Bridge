@@ -7,7 +7,7 @@ from requests.auth import HTTPBasicAuth
 from bs4 import BeautifulSoup
 
 from glassbridge import create_app, db
-from glassbridge.models import Step, Submission
+from glassbridge.models import Step, Submission, Participant
 
 load_dotenv()
 
@@ -52,36 +52,65 @@ with app.app_context():
 
         new_submission = Submission(id=id)
         db.session.add(new_submission)
-        db.session.commit()
 
         r = s.get(
             f"https://www.its.ac.id/informatika/domjudge/jury/submissions/{id}/source"
         )
-        soup = BeautifulSoup(r.text, "html.parser")
-        text_layer = soup.find("div", class_="editor")
-        code = text_layer.text.split("\n")
         try:
+            soup = BeautifulSoup(r.text, "html.parser")
+            text_layer = soup.find("div", class_="editor")
+            code = text_layer.text.split("\n")
+
             nama = code[1][13:]
             nrp = code[2][17:]
             nrp = nrp[: nrp.index("@")]
         except Exception:
+            db.session.rollback()
             continue
 
-        print(f"Nama: {nama}, NRP: {nrp}, ", end="")
+        print(f"Nama: {nama}, id: {id}")
 
-        r = s.get(f"https://www.its.ac.id/informatika/domjudge/jury/submissions/{id}")
-        soup = BeautifulSoup(r.text, "html.parser")
-        body = soup.find("body")
-        td = body.find_all("td")[1]
-        testcases = td.find_all("a")
+        participant = Participant.query.filter_by(nrp=nrp).first()
+        if participant is None:
+            db.session.rollback()
+            continue
 
-        accepted = True
-        for i, testcase in enumerate(testcases):
-            verdict = testcase.get_text()
-            if verdict == "w" or verdict == "?":
-                print(f"Verdict on step {i}: {verdict}")
-                accepted = False
-                break
+        if participant.first_try is None:
+            participant.first_try_id = id
+            print("First Try!")
+        elif participant.second_try is None:
+            participant.second_try_id = id
+            print("Second Try!")
+        else:
+            print("HOW DID THIS HAPPEN")
+            db.session.rollback()
+            continue
 
-        if accepted:
-            print("AC!")
+        try:
+            r = s.get(f"https://www.its.ac.id/informatika/domjudge/jury/submissions/{id}")
+            soup = BeautifulSoup(r.text, "html.parser")
+            body = soup.find("body")
+            td = body.find_all("td")[1]
+            testcases = td.find_all("a")
+
+            accepted = True
+            for i, testcase in enumerate(testcases):
+                verdict = testcase.get_text()
+                if verdict == "w" or verdict == "?":
+                    if steps[i].stepped:
+                        steps[i].patricks += 1
+                        db.session.add(steps[i])
+                    print(f"Verdict on step {i}: {verdict}")
+                    accepted = False
+                    break
+                steps[i].stepped = True
+                steps[i].survivors += 1
+                db.session.add(steps[i])
+
+            if accepted:
+                print("AC!")
+        except Exception as e:
+            print(e)
+            db.session.rollback()
+
+        db.session.commit()

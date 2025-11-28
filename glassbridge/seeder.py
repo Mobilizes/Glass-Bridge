@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .models import db, Step, Participant, Correct
+from .models import db, Step, Participant
 
 
 def seed_data():
@@ -14,7 +14,7 @@ def seed_data():
         seeds.append(
             Step(
                 id=row["id"],
-                correct=Correct.RIGHT if row["ac"] == "r" else Correct.LEFT,
+                correct=row["ac"],
             )
         )
 

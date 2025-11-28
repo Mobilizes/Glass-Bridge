@@ -21,11 +21,21 @@
       {% for step in steps %}
       <div class="step-row" style="animation-delay: {{ step.id * 0.05 }}s">
         <div class="step-number">#{{ step.id }}</div>
-        <div class="glass-panel left">
-          <div class="tooltip"></div>
+        <div class="glass-panel left" style="
+          {% if step.stepped and step.correct == 'r' %}
+            opacity: 20% !important;
+            pointer-events: none !important;
+          {% endif %}"
+        >
+          <div class="tooltip left">There are {{step.survivors}} people that has crossed this step</div>
         </div>
-        <div class="glass-panel right">
-          <div class="tooltip"></div>
+        <div class="glass-panel right" style="
+          {% if step.stepped and step.correct == 'l' %}
+            opacity: 20% !important;
+            pointer-events: none !important;
+          {% endif %}"
+        >
+          <div class="tooltip right">There are {{step.survivors}} people that has crossed this step</div>
         </div>
       </div>
       {% endfor %}
@@ -54,16 +64,6 @@
 
       document.getElementById("countdown").textContent =
         `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-
-      left = document.getElementsByClassName("glass-panel left");
-      right = document.getElementsByClassName("glass-panel right");
-
-      for (let el of left) {
-        el.getElementsByClassName("tooltip")[0].textContent = "Safe";
-      }
-      for (let el of right) {
-        el.getElementsByClassName("tooltip")[0].textContent = "Break";
-      }
     }
 
     updateCountdown();

@@ -1,12 +1,23 @@
 import os
 
 from flask import Flask
-from flask_migrate import Migrate
 from dotenv import load_dotenv
 
 from .models import db
 from .seeder import seed_data
 from . import routes
+
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+import sqlite3
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    if isinstance(dbapi_connection, sqlite3.Connection):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
 
 
 def create_app(test_config=None):
@@ -27,7 +38,11 @@ def create_app(test_config=None):
         pass
 
     db.init_app(app)
-    Migrate(app, db)
+
+    @app.cli.command("migrate")
+    def migrate_command():
+        with app.app_context():
+            db.create_all()
 
     @app.cli.command("seed")
     def seed_command():

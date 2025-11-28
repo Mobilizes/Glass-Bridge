@@ -1,3 +1,7 @@
+// hello
+//User Name: Farrel Marvellino Sugianto
+//Email Address: 5025251018@student.its.ac.id 
+
 #include <stdio.h>
 
 int main()
