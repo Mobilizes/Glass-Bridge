@@ -36,4 +36,10 @@ def index():
         for step in steps
     ]
 
-    return render_template("index.html", steps=steps_json, end_time=end_time, quotes=quote)
+    idx = 0
+    for step in steps:
+        if not step.stepped:
+            break
+        idx += 1
+
+    return render_template("index.html", steps=steps_json, end_time=end_time, quotes=quote, last_step=idx)
