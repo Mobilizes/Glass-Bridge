@@ -370,7 +370,7 @@
     <div class="header">
       <h1>Glass Bridge</h1>
       <p>{{ quotes }}</p>
-      <br>
+      <br />
       <h2><span id="countdown"></span></h2>
     </div>
 
@@ -378,36 +378,36 @@
       {% for step in steps %}
       <div class="step-row">
         <div class="step-number">#{{ step.id }}</div>
-        <div class="glass-panel left step-{{step.id}}" style="
+        <div
+          class="glass-panel left step-{{step.id}}"
+          style="
           {% if step.stepped and step.correct == 'r' %}
             opacity: 20% !important;
             pointer-events: none !important;
           {% endif %}"
         >
-          <div class="tooltip left {% if step.survivors == 1 %}fresh{% endif %}">
-            {% if step.survivors == 0 %}
-              Which one is the correct one?
-            {% elif step.survivors == 1 %}
-              Here!
-            {% else %}
-              {{step.survivors}} survivors has crossed beyond this step...
-            {% endif %}
+          <div
+            class="tooltip left {% if step.survivors == 1 %}fresh{% endif %}"
+          >
+            {% if step.survivors == 0 %} Which one is the correct one? {% elif
+            step.survivors == 1 %} Here! {% else %} {{step.survivors}} survivors
+            has crossed beyond this step... {% endif %}
           </div>
         </div>
-        <div class="glass-panel right step-{{step.id}}" style="
+        <div
+          class="glass-panel right step-{{step.id}}"
+          style="
           {% if step.stepped and step.correct == 'l' %}
             opacity: 20% !important;
             pointer-events: none !important;
           {% endif %}"
         >
-          <div class="tooltip right {% if step.survivors == 1 %}fresh{% endif %}">
-            {% if step.survivors == 0 %}
-              Which one is the correct one?
-            {% elif step.survivors == 1 %}
-              Here!
-            {% else %}
-              {{step.survivors}} survivors has crossed beyond this step...
-            {% endif %}
+          <div
+            class="tooltip right {% if step.survivors == 1 %}fresh{% endif %}"
+          >
+            {% if step.survivors == 0 %} Which one is the correct one? {% elif
+            step.survivors == 1 %} Here! {% else %} {{step.survivors}} survivors
+            has crossed beyond this step... {% endif %}
           </div>
         </div>
       </div>
@@ -421,8 +421,8 @@
   </body>
   <script>
     window.onload = () => {
-      document.body.style.opacity = '1';
-    }
+      document.body.style.opacity = "1";
+    };
 
     const endTime = new Date("{{ end_time }}").getTime();
 
@@ -437,24 +437,24 @@
       }
 
       const hours = Math.floor(diff / 1000 / 60 / 60);
-      const minutes = Math.floor(diff / 1000 / 60 % 60);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
       document.getElementById("countdown").textContent =
-        `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+        `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     }
 
-    document.querySelector('.scroll-down').addEventListener('click', () => {
-      document.querySelector('.step-{{last_step}}').scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
+    document.querySelector(".scroll-down").addEventListener("click", () => {
+      document.querySelector(".step-{{last_step}}").scrollIntoView({
+        behavior: "smooth",
+        block: "center",
       });
     });
 
-    document.querySelector('.scroll-top').addEventListener('click', () => {
-      document.querySelector('.header').scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
+    document.querySelector(".scroll-top").addEventListener("click", () => {
+      document.querySelector(".header").scrollIntoView({
+        behavior: "smooth",
+        block: "center",
       });
     });
 

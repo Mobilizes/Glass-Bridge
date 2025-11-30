@@ -75,11 +75,13 @@ with app.app_context():
 
         print(f"Nama: {nama}, id: {id}")
 
+        second_try = False
         if participant.first_try is None:
             participant.first_try_id = id
             print("First Try!")
         elif participant.second_try is None:
             participant.second_try_id = id
+            second_try = True
             print("Second Try!")
         else:
             print("HOW DID THIS HAPPEN")
@@ -104,7 +106,8 @@ with app.app_context():
                     accepted = False
                     break
                 steps[i].stepped = True
-                steps[i].survivors += 1
+                if not second_try:
+                    steps[i].survivors += 1
                 db.session.add(steps[i])
 
             if accepted:
