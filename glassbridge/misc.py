@@ -15,28 +15,28 @@ quotes = [
 
 # I don't care enough to change this to environment variable.
 SOALS = [
-    "(T)Keamanan Pusat Teknologi Senku dari Augista",
-    "(G)Berbagi-Bagi Chrysanthemum dari Gerry",
     "(A)Tarot Reader dari Qurrata",
+    "(B)Banyak Banget Catalog dari Cathleen",
+    "(C)Chi dari Akmal",
     "(D)Calypso's Enchanted Grid dari Mitra",
-    "(V)Micin dari Cindy",
-    "(O)Tiktok dari Algof",
-    "(F)Merakit Prototipe dari Frenaldy",
-    "(S)Pascal dari Stefanus",
-    "(Y)DOM dari Kevin",
-    "(C) dari Akmal",
-    "(Q)Nitwit's Crate Problem dari Dzaky",
-    "(P) dari Steven",
     "(E)Evisrucer dari Sienna dan Zaky",
+    "(F)Merakit Prototipe dari Frenaldy",
+    "(G)Berbagi-Bagi Corolla dari Gerry",
+    "(H)Walaweh dari Abid",
     "(I)Mau Pulang dari Izul",
-    "() dari Abid",
     "(L)Bangau-Bangau Cinta dari Richie",
     "(M)Banyak Banget Cosmos dari Daniel",
-    "(B)Banyak Banget Catalog dari Cathleen",
+    "(O)Tiktok dari Algof",
+    "(P)Pop or Flop dari Steven",
+    "(Q)Nitwit's Crate Problem dari Dzaky",
+    "(S)Pascal dari Stefanus",
+    "(T)Keamanan Pusat Teknologi Senku dari Augista",
+    "(V)Micin dari Cindy",
+    "(Y)DOM dari Kevin",
 ]
 
 
-weights = 3
+weights = 2
 for _ in range(weights):
     for soal in SOALS:
         quotes.append(f"Jangan lupa solve {soal}!")

@@ -6,3 +6,4 @@ secret/
 venv/
 *.log
 *.csv
+*.c
