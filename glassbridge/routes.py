@@ -30,6 +30,8 @@ def index():
             "id": step.id,
             "correct": step.correct,
             "stepped": step.stepped,
+            "first_step": step.first_step,
+            "latest_step": step.latest_step,
             "patricks": step.patricks,
             "survivors": step.survivors,
         }

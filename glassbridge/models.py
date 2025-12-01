@@ -41,6 +41,13 @@ class Step(db.Model):
     first_step = relationship("Participant", foreign_keys=[first_step_nrp])
     first_step_ts = db.Column(db.DateTime, nullable=True)
 
+    # Most recent one to take the step
+    latest_step_nrp = db.Column(
+        db.Integer, ForeignKey("participants.nrp"), nullable=True
+    )
+    latest_step = relationship("Participant", foreign_keys=[latest_step_nrp])
+    latest_step_ts = db.Column(db.DateTime, nullable=True)
+
     # How many people fell after solution is revealed
     patricks = db.Column(db.Integer, default=0)
     # q: Why named patrick?
@@ -64,3 +71,9 @@ class Submission(db.Model):
 def update_first_step_ts(target, value, oldvalue, initiator):
     if value is not None:
         target.first_step_ts = datetime.utcnow()
+
+
+@event.listens_for(Step.latest_step_nrp, "set")
+def update_latest_step_ts(target, value, oldvalue, initiator):
+    if value is not None:
+        target.latest_step_ts = datetime.utcnow()

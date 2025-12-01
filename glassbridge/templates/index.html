@@ -210,16 +210,8 @@
         font-weight: bold;
       }
 
-      .tooltip.left {
-        left: 120%;
-      }
-
       .tooltip.left.fresh {
         left: 50%;
-      }
-
-      .tooltip.right {
-        left: -20%;
       }
 
       .tooltip.right.fresh {
@@ -255,6 +247,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        pointer-events: none;
         padding: 0 40px;
         background: linear-gradient(
           0deg,
@@ -262,6 +255,10 @@
           transparent 100%
         );
         z-index: 999;
+      }
+
+      .footer > * {
+        pointer-events: auto;
       }
 
       .scroll-down {
@@ -390,8 +387,9 @@
             class="tooltip left {% if step.survivors == 1 %}fresh{% endif %}"
           >
             {% if step.survivors == 0 %} Which one is the correct one? {% elif
-            step.survivors == 1 %} Here! {% else %} {{step.survivors}} survivors
-            has crossed beyond this step... {% endif %}
+            step.survivors == 1 %} Found by {{step.first_step.name}}! {% else %}
+            {{step.survivors}} survivors has been here. Latest is
+            {{step.latest_step.name}} {% endif %}
           </div>
         </div>
         <div
@@ -406,8 +404,9 @@
             class="tooltip right {% if step.survivors == 1 %}fresh{% endif %}"
           >
             {% if step.survivors == 0 %} Which one is the correct one? {% elif
-            step.survivors == 1 %} Here! {% else %} {{step.survivors}} survivors
-            has crossed beyond this step... {% endif %}
+            step.survivors == 1 %} Found by {{step.first_step.name}}! {% else %}
+            {{step.survivors}} survivors has been here. Latest is
+            {{step.latest_step.name}} {% endif %}
           </div>
         </div>
       </div>
@@ -423,6 +422,8 @@
     window.onload = () => {
       document.body.style.opacity = "1";
     };
+
+    console.log("{{steps[0].latest_step}}");
 
     const endTime = new Date("{{ end_time }}").getTime();
 

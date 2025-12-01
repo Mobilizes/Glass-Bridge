@@ -65,31 +65,33 @@ with app.app_context():
             nrp = code[2][17:]
             nrp = nrp[: nrp.index("@")]
         except Exception:
+            print(f"Submission ID {id} error; failed to fetch name or nrp")
             db.session.rollback()
             continue
 
         participant = Participant.query.filter_by(nrp=nrp).first()
         if participant is None:
+            print(f"Submission ID {id} error; nrp is not participant")
             db.session.rollback()
             continue
-
-        print(f"Nama: {nama}, id: {id}")
 
         second_try = False
         if participant.first_try is None:
             participant.first_try_id = id
-            print("First Try!")
         elif participant.second_try is None:
             participant.second_try_id = id
             second_try = True
-            print("Second Try!")
         else:
-            print("HOW DID THIS HAPPEN")
+            print(f"Submission ID {id} error; {nrp} has 3 or more submissions!")
             db.session.rollback()
             continue
 
+        print(f"nama: {nama}, first try: {not second_try}, submission id: {id}")
+
         try:
-            r = s.get(f"https://www.its.ac.id/informatika/domjudge/jury/submissions/{id}")
+            r = s.get(
+                f"https://www.its.ac.id/informatika/domjudge/jury/submissions/{id}"
+            )
             soup = BeautifulSoup(r.text, "html.parser")
             body = soup.find("body")
             td = body.find_all("td")[1]
@@ -100,22 +102,29 @@ with app.app_context():
                 if not accepted:
                     break
 
+                if not steps[i].stepped:
+                    steps[i].first_step_nrp = nrp
+
+                if not second_try or participant.first_try.step > i:
+                    steps[i].survivors += 1
+
                 verdict = testcase.get_text()
                 if verdict != "✓":
                     if steps[i].stepped:
                         steps[i].patricks += 1
                     print(f"Verdict on step {i}: {verdict}")
                     accepted = False
-                elif not second_try:
-                    steps[i].survivors += 1
+                new_submission.step = i
+                db.session.add(new_submission)
 
                 steps[i].stepped = True
+                steps[i].latest_step_nrp = nrp
                 db.session.add(steps[i])
 
             if accepted:
                 print("AC!")
         except Exception as e:
-            print(e)
+            print("Unknown error:", e.with_traceback())
             db.session.rollback()
 
         db.session.commit()
