@@ -97,17 +97,19 @@ with app.app_context():
 
             accepted = True
             for i, testcase in enumerate(testcases):
+                if not accepted:
+                    break
+
                 verdict = testcase.get_text()
-                if verdict == "w" or verdict == "?":
+                if verdict != "✓":
                     if steps[i].stepped:
                         steps[i].patricks += 1
-                        db.session.add(steps[i])
                     print(f"Verdict on step {i}: {verdict}")
                     accepted = False
-                    break
-                steps[i].stepped = True
-                if not second_try:
+                elif not second_try:
                     steps[i].survivors += 1
+
+                steps[i].stepped = True
                 db.session.add(steps[i])
 
             if accepted:
