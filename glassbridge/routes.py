@@ -21,9 +21,9 @@ def index():
     quote = random.choice(quotes)
 
     if quote == "randomfakeanswer":
-        quote = f"Step ke #{random.randint(0, 149)} adalah '{random.choice(["l", "r"])}'!"
+        quote = f"Step ke #{random.randint(0, 99)} adalah '{random.choice(["l", "r"])}'!"
         if random.random() < 0.2:
-            quote = 'Step ke #{random.randint(0, 149)} adalah \'{random.choice("l", "r")}\'!'
+            quote = 'Step ke #{random.randint(0, 99)} adalah \'{random.choice("l", "r")}\'!'
 
     steps_json = [
         {

@@ -19,6 +19,23 @@ class Participant(db.Model):
         "Submission", foreign_keys=[first_try_id], passive_deletes=True
     )
 
+    # Senopati is uploading 3 times per submission
+    filler_try_id_1 = db.Column(
+        db.Integer, ForeignKey("submissions.id", ondelete="SET NULL"), nullable=True
+    )
+
+    filler_try_id_2 = db.Column(
+        db.Integer, ForeignKey("submissions.id", ondelete="SET NULL"), nullable=True
+    )
+
+    filler_try_id_3 = db.Column(
+        db.Integer, ForeignKey("submissions.id", ondelete="SET NULL"), nullable=True
+    )
+
+    filler_try_id_4 = db.Column(
+        db.Integer, ForeignKey("submissions.id", ondelete="SET NULL"), nullable=True
+    )
+
     second_try_id = db.Column(
         db.Integer, ForeignKey("submissions.id", ondelete="SET NULL"), nullable=True
     )

@@ -42,9 +42,9 @@ with app.app_context():
     for submission in data:
         id = submission["id"]
         # INFO: Dont forget to turn this uncomment this upon production
-        # team = submission["team_id"]
-        # if team != senopati_external_team_id:
-        #     continue
+        team = submission["team_id"]
+        if team != senopati_external_team_id:
+            continue
 
         submission = Submission.query.filter_by(id=id).first()
         if submission is not None:
@@ -66,21 +66,34 @@ with app.app_context():
             nrp = nrp[: nrp.index("@")]
         except Exception:
             print(f"Submission ID {id} error; failed to fetch name or nrp")
-            db.session.rollback()
+            db.session.commit()
             continue
 
         participant = Participant.query.filter_by(nrp=nrp).first()
         if participant is None:
             print(f"Submission ID {id} error; nrp is not participant")
-            db.session.rollback()
+            db.session.commit()
             continue
 
+        filler = True
         second_try = False
         if participant.first_try is None:
             participant.first_try_id = id
+            filler = False
+
+        elif participant.filler_try_id_1 is None:
+            participant.filler_try_id_1 = id
+        elif participant.filler_try_id_2 is None:
+            participant.filler_try_id_2 = id
+        elif participant.filler_try_id_3 is None:
+            participant.filler_try_id_3 = id
+        elif participant.filler_try_id_4 is None:
+            participant.filler_try_id_4 = id
+
         elif participant.second_try is None:
             participant.second_try_id = id
             second_try = True
+            filler = False
         else:
             print(f"Submission ID {id} error; {nrp} has 3 or more submissions!")
             db.session.rollback()
@@ -102,21 +115,22 @@ with app.app_context():
                 if not accepted:
                     break
 
-                if not steps[i].stepped:
-                    steps[i].first_step_nrp = nrp
-
-                if not second_try or participant.first_try.step > i:
+                if (
+                    not second_try or i > participant.first_try.step
+                ) and not filler:
                     steps[i].survivors += 1
 
                 verdict = testcase.get_text()
                 if verdict != "✓":
-                    if steps[i].stepped:
+                    if steps[i].stepped and not filler:
                         steps[i].patricks += 1
                     print(f"Verdict on step {i}: {verdict}")
                     accepted = False
                 new_submission.step = i
                 db.session.add(new_submission)
 
+                if not steps[i].stepped:
+                    steps[i].first_step_nrp = nrp
                 steps[i].stepped = True
                 steps[i].latest_step_nrp = nrp
                 db.session.add(steps[i])
@@ -124,7 +138,7 @@ with app.app_context():
             if accepted:
                 print("AC!")
         except Exception as e:
-            print("Unknown error:", e.with_traceback())
+            print("Unknown error:", repr(e))
             db.session.rollback()
 
         db.session.commit()
