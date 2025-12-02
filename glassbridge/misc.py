@@ -42,6 +42,6 @@ for _ in range(weights):
 
     quotes.append("Semangat solve (K)The Ascended King dari Arya Sudewa!")
     quotes.append("Semangat solve (Z)拖拉機 dari Rengga!")
-    quotes.append("(V)The Moon is Beautiful, isn't it? dari Cindy")
+    quotes.append("Semangat solve (V)The Moon is Beautiful, isn't it? dari Cindy!")
 
     quotes.append("Jangan lupa daftar Schematics 2026!")
