@@ -43,6 +43,19 @@ class Participant(db.Model):
         "Submission", foreign_keys=[second_try_id], passive_deletes=True
     )
 
+    @property
+    def all_submissions(self):
+        ids = [
+            self.first_try_id,
+            self.filler_try_id_1,
+            self.filler_try_id_2,
+            self.filler_try_id_3,
+            self.filler_try_id_4,
+            self.second_try_id,
+        ]
+
+        return [id for id in ids if id is not None]
+
 
 class Step(db.Model):
     __tablename__ = "steps"
@@ -83,14 +96,5 @@ class Submission(db.Model):
     # If participant receives AC, step would be {LAST_STEP_INDEX+1}
     step = db.Column(db.Integer)
 
-
-@event.listens_for(Step.first_step_nrp, "set")
-def update_first_step_ts(target, value, oldvalue, initiator):
-    if value is not None:
-        target.first_step_ts = datetime.utcnow()
-
-
-@event.listens_for(Step.latest_step_nrp, "set")
-def update_latest_step_ts(target, value, oldvalue, initiator):
-    if value is not None:
-        target.latest_step_ts = datetime.utcnow()
+    # To counteract if someone submits at the same time the cronjob updates
+    check_count = db.Column(db.Integer, default=0)

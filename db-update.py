@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 import requests
 import json
@@ -43,14 +44,19 @@ with app.app_context():
         id = submission["id"]
         # INFO: Dont forget to turn this uncomment this upon production
         team = submission["team_id"]
+        sub_time = datetime.fromisoformat(submission["time"])
         if team != senopati_external_team_id:
             continue
 
         submission = Submission.query.filter_by(id=id).first()
-        if submission is not None:
+        if submission is not None and submission.check_count == 1:
             continue
 
-        new_submission = Submission(id=id)
+        if submission is not None:
+            new_submission = submission
+            new_submission.check_count += 1
+        else:
+            new_submission = Submission(id=id)
         db.session.add(new_submission)
 
         r = s.get(
@@ -77,29 +83,37 @@ with app.app_context():
 
         filler = True
         second_try = False
-        if participant.first_try is None:
-            participant.first_try_id = id
+        if int(id) not in participant.all_submissions:
+            if participant.first_try is None:
+                participant.first_try_id = id
+                filler = False
+
+            elif participant.filler_try_id_1 is None:
+                participant.filler_try_id_1 = id
+            elif participant.filler_try_id_2 is None:
+                participant.filler_try_id_2 = id
+            elif participant.filler_try_id_3 is None:
+                participant.filler_try_id_3 = id
+            elif participant.filler_try_id_4 is None:
+                participant.filler_try_id_4 = id
+
+            elif participant.second_try is None:
+                participant.second_try_id = id
+                second_try = True
+                filler = False
+            else:
+                print(f"Submission ID {id} error; {nrp} has 3 or more submissions!")
+                db.session.rollback()
+                continue
+        elif participant.first_try_id is not None and id == participant.first_try_id:
             filler = False
-
-        elif participant.filler_try_id_1 is None:
-            participant.filler_try_id_1 = id
-        elif participant.filler_try_id_2 is None:
-            participant.filler_try_id_2 = id
-        elif participant.filler_try_id_3 is None:
-            participant.filler_try_id_3 = id
-        elif participant.filler_try_id_4 is None:
-            participant.filler_try_id_4 = id
-
-        elif participant.second_try is None:
-            participant.second_try_id = id
+        elif participant.second_try_id is not None and id == participant.second_try_id:
             second_try = True
             filler = False
-        else:
-            print(f"Submission ID {id} error; {nrp} has 3 or more submissions!")
-            db.session.rollback()
-            continue
 
-        print(f"nama: {nama}, first try: {not second_try}, submission id: {id}")
+        print(
+            f"nama: {nama}, first try: {not second_try}, submission id: {id}, check count: {submission.check_count if submission is not None else 0}"
+        )
 
         try:
             r = s.get(
@@ -115,9 +129,7 @@ with app.app_context():
                 if not accepted:
                     break
 
-                if (
-                    not second_try or i > participant.first_try.step
-                ) and not filler:
+                if (not second_try or i > participant.first_try.step) and not filler:
                     steps[i].survivors += 1
 
                 verdict = testcase.get_text()
@@ -131,8 +143,10 @@ with app.app_context():
 
                 if not steps[i].stepped:
                     steps[i].first_step_nrp = nrp
+                    steps[i].first_step_ts = sub_time
                 steps[i].stepped = True
                 steps[i].latest_step_nrp = nrp
+                steps[i].latest_step_ts = sub_time
                 db.session.add(steps[i])
 
             if accepted:
