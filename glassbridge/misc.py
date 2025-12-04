@@ -22,7 +22,7 @@ SOALS = [
     "(E)Evisrucer dari Sienna dan Zaky",
     "(F)Merakit Prototipe dari Frenaldy",
     "(G)Berbagi-Bagi Corolla dari Gerry",
-    "(H)Walaweh dari Abid",
+    "(H)Hadehhh dari Abid",
     "(I)Mau Pulang dari Izul",
     "(L)Bangau-Bangau Cinta dari Richie",
     "(M)Banyak Banget Cosmos dari Daniel",

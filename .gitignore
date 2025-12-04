@@ -4,6 +4,7 @@ instance/
 migrations/
 secret/
 venv/
+instance*
 *.log
 *.csv
 *.c
