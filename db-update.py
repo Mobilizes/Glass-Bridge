@@ -49,7 +49,7 @@ with app.app_context():
             continue
 
         submission = Submission.query.filter_by(id=id).first()
-        if submission is not None and submission.check_count == 1:
+        if submission is not None and submission.check_count == 2:
             continue
 
         if submission is not None:
@@ -129,12 +129,15 @@ with app.app_context():
                 if not accepted:
                     break
 
-                if (not second_try or i > participant.first_try.step) and not filler:
+                if (
+                    (not second_try or i > participant.first_try.step)
+                    and not filler and submission is None
+                ):
                     steps[i].survivors += 1
 
                 verdict = testcase.get_text()
                 if verdict != "✓":
-                    if steps[i].stepped and not filler:
+                    if steps[i].stepped and not filler and submission is None:
                         steps[i].patricks += 1
                     print(f"Verdict on step {i}: {verdict}")
                     accepted = False
